@@ -8,7 +8,7 @@ using CodecZlib: GzipDecompressor, transcode
 
 using DataFrames: DataFrame
 
-using JSON: parsefile
+using JSON: parsefile, print
 
 using Mmap: mmap
 
@@ -153,6 +153,16 @@ function read_dictionary(pa)
     else
 
         parsefile(pa)
+
+    end
+
+end
+
+function write_dictionary(pa, di)
+
+    open(pa, "w") do io
+
+        print(io, di, 2)
 
     end
 
