@@ -109,13 +109,13 @@ end
 # Dictionary
 # =============================================================================================== #
 
-function map_merge(::Any, an)
+function pair_merge(::Any, an)
 
     an
 
 end
 
-function map_merge(d1::AbstractDict, d2)
+function pair_merge(d1::AbstractDict, d2)
 
     d3 = Dict{
         Union{eltype(keys(d1)), eltype(keys(d2))},
@@ -126,7 +126,7 @@ function map_merge(d1::AbstractDict, d2)
 
         d3[an] = if haskey(d1, an) && haskey(d2, an)
 
-            map_merge(d1[an], d2[an])
+            pair_merge(d1[an], d2[an])
 
         elseif haskey(d1, an)
 
