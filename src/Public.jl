@@ -383,7 +383,7 @@ function read_table(pa; ke_...)
 
     in_ = mmap(pa)
 
-    make_part(read(if endswith(pa, "gz")
+    read(if endswith(pa, "gz")
 
         transcode(GzipDecompressor, in_)
 
@@ -391,13 +391,13 @@ function read_table(pa; ke_...)
 
         in_
 
-    end, DataFrame; ke_...))
+    end, DataFrame; ke_...)
 
 end
 
 function read_sheet(pa, st; ke_...)
 
-    make_part(DataFrame(readtable(pa, st; infer_eltypes = true, ke_...)))
+    DataFrame(readtable(pa, st; infer_eltypes = true, ke_...))
 
 end
 
