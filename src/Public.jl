@@ -632,7 +632,15 @@ end
 
 function pair_title(s1, s2 = "")
 
-    "title" => Dict("text" => s1, "subtitle" => Dict("text" => s2))
+    di = Dict("text" => s1)
+
+    if !isempty(s2)
+
+        di["subtitle"] => Dict("text" => s2)
+
+    end
+
+    "title" => di
 
 end
 
