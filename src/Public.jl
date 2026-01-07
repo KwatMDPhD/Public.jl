@@ -76,7 +76,7 @@ end
 
 function make_date(st)
 
-    Date(st, dateformat"yyyy mm dd")
+    Date(st, @dateformat_str("yyyy mm dd"))
 
 end
 
@@ -385,6 +385,12 @@ function make_part(A)
 
 end
 
+function make_table(st, s1_, s2_, A)
+
+    insertcols!(DataFrame(A, s2_), 1, st => s1_)
+
+end
+
 function read_table(pa; ke_...)
 
     @assert isfile(pa) pa
@@ -406,12 +412,6 @@ end
 function read_sheet(pa, st; ke_...)
 
     DataFrame(readtable(pa, st; infer_eltypes = true, ke_...))
-
-end
-
-function make_table(st, s1_, s2_, A)
-
-    insertcols!(DataFrame(A, s2_), 1, st => s1_)
 
 end
 
