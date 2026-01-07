@@ -108,7 +108,15 @@ end
 
 function read_path(pa)
 
-    run(`open --background $pa`; wait = false)
+    try
+
+        run(`open --background $pa`)
+
+    catch
+
+        @warn pa
+
+    end
 
 end
 
