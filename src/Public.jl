@@ -466,13 +466,13 @@ const H2_ = "#8a3ffc",
 "#ba4e00",
 "#d4bbff"
 
-function make_colors1(he_)
+function make_color1(he_)
 
     ColorScheme([parse(RGB, he) for he in he_])
 
 end
 
-function make_colors2(he_)
+function make_color2(he_)
 
     um = length(he_)
 
@@ -618,7 +618,7 @@ function pair_heat(s1_, s2_, N)
         "y" => s1_,
         "x" => s2_,
         "z" => collect(eachrow(N)),
-        "colorscale" => make_colors2(H1_),
+        "colorscale" => make_color2(H1_),
     )
 
 end
