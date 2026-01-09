@@ -34,7 +34,7 @@ for (st, nu_) in (
     (
         "A|Ab - B|Ab",
         map(
-            (n1, n2, n3) -> Public.number_divergence(-, n1, n2, n3, n3),
+            (n1, n2, n3) -> Public.number_divergence(-, n1, n3, n2, n3),
             N1_,
             N2_,
             N3_,
@@ -43,7 +43,7 @@ for (st, nu_) in (
     (
         "A|Ab + B|Ab",
         map(
-            (n1, n2, n3) -> Public.number_divergence(+, n1, n2, n3, n3),
+            (n1, n2, n3) -> Public.number_divergence(+, n1, n3, n2, n3),
             N1_,
             N2_,
             N3_,
@@ -52,7 +52,7 @@ for (st, nu_) in (
     (
         "A|AB + B|AB",
         map(
-            (n1, n2, n3) -> Public.number_divergence(+, n1, n2, n3, n3),
+            (n1, n2, n3) -> Public.number_divergence(+, n1, n3, n2, n3),
             N1_,
             N2_,
             N4_,

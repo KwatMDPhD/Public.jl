@@ -38,196 +38,6 @@ using XLSX: readtable
 
 ########################################
 
-function text_2(nu)
-
-    @sprintf "%.2g" nu
-
-end
-
-function text_4(nu)
-
-    @sprintf "%.4g" nu
-
-end
-
-########################################
-
-function text_index(st, an, nd)
-
-    split(st, an; limit = nd + 1)[nd]
-
-end
-
-function text_limit(s1, um)
-
-    if length(s1) <= um
-
-        return s1
-
-    end
-
-    s2 = s1[1:um]
-
-    "$s2..."
-
-end
-
-########################################
-
-function make_date(st)
-
-    Date(st, @dateformat_str("yyyy mm dd"))
-
-end
-
-########################################
-
-function is_path(pa, u1)
-
-    u2 = 0
-
-    while u2 < u1
-
-        if ispath(pa)
-
-            return true
-
-        end
-
-        sleep(1)
-
-        u2 += 1
-
-        @info "Waited for $pa ($u2 / $u1)."
-
-    end
-
-    false
-
-end
-
-function read_path(pa)
-
-    try
-
-        run(`open --background $pa`)
-
-    catch
-
-        @warn pa
-
-    end
-
-end
-
-########################################
-
-function index_extreme(an_, u1)
-
-    u2 = length(an_)
-
-    sortperm(an_)[if 0.5 * u2 <= u1
-
-        1:u2
-
-    else
-
-        vcat(1:u1, (u2 - u1 + 1):u2)
-
-    end]
-
-end
-
-########################################
-
-function number_divergence(n1, n2)
-
-    n1 * log2(n1 / n2)
-
-end
-
-function number_divergence(fu, n1, n2)
-
-    fu(number_divergence(n1, n2), number_divergence(n2, n1))
-
-end
-
-function number_divergence(fu, n1, n2, n3, n4)
-
-    fu(number_divergence(n1, n2), number_divergence(n3, n4))
-
-end
-
-########################################
-
-function number_significance(fu::Function, nu_)
-
-    um = count(fu, nu_)
-
-    if iszero(um)
-
-        1
-
-    else
-
-        um
-
-    end / length(nu_)
-
-end
-
-function number_significance(fu, n1_, n2_)
-
-    pr_ = map(nu -> number_significance(fu(nu), n2_), n1_)
-
-    pr_, adjust(pr_, BenjaminiHochberg())
-
-end
-
-function number_sign(n1_)
-
-    ty = eltype(n1_)
-
-    n2_ = ty[]
-
-    n3_ = ty[]
-
-    for nu in n1_
-
-        push!(if nu < 0
-
-            n2_
-
-        else
-
-            n3_
-
-        end, nu)
-
-    end
-
-    n2_, n3_
-
-end
-
-function number_significance(n1_, n2_)
-
-    i1_ = findall(<(0), n1_)
-
-    i2_ = findall(>=(0), n1_)
-
-    n3_, n4_ = number_sign(n2_)
-
-    n5_, n6_ = number_significance(<=, n1_[i1_], n3_)
-
-    n7_, n8_ = number_significance(>=, n1_[i2_], n4_)
-
-    vcat(i1_, i2_), vcat(n5_, n7_), vcat(n6_, n8_)
-
-end
-
-########################################
-
 function number_minimum!(nu_, n1)
 
     n2 = minimum(nu_) - n1
@@ -236,13 +46,13 @@ function number_minimum!(nu_, n1)
 
 end
 
-function number_z!(nu_)
+function number_mean!(nu_)
 
     n1, n2 = mean_and_std(nu_)
 
-    pr = inv(n2)
+    n3 = inv(n2)
 
-    map!(n3 -> (n3 - n1) * pr, nu_, nu_)
+    map!(n4 -> (n4 - n1) * n3, nu_, nu_)
 
 end
 
@@ -276,6 +86,26 @@ end
 
 ########################################
 
+function number_divergence(n1, n2)
+
+    n1 * log2(n1 / n2)
+
+end
+
+function number_divergence(fu, n1, n2)
+
+    fu(number_divergence(n1, n2), number_divergence(n2, n1))
+
+end
+
+function number_divergence(fu, n1, n2, n3, n4)
+
+    fu(number_divergence(n1, n2), number_divergence(n3, n4))
+
+end
+
+########################################
+
 function number_difference(n1_, n2_)
 
     mean(n2_) - mean(n1_)
@@ -298,11 +128,147 @@ function number_signal(n1_, n2_)
 
 end
 
-########################################
-
-function make_2(fu, bo_, an_)
+function make_function(fu, bo_, an_)
 
     fu(an_[map(!, bo_)], an_[bo_])
+
+end
+
+########################################
+
+function index_extreme(an_, u1)
+
+    u2 = length(an_)
+
+    sortperm(an_)[if u2 <= 2 * u1
+
+        1:u2
+
+    else
+
+        vcat(1:u1, (u2 - u1 + 1):u2)
+
+    end]
+
+end
+
+function number_significance(fu, n1_, n2_)
+
+    um = length(n2_)
+
+    pr_ = map(nu -> max(1, count(fu(nu), n2_)) / um, n1_)
+
+    pr_, adjust(pr_, BenjaminiHochberg())
+
+end
+
+# TODO: Consider comparing against both signs
+
+function number_sign(n1_)
+
+    ty = eltype(n1_)
+
+    n2_ = ty[]
+
+    n3_ = ty[]
+
+    for nu in n1_
+
+        push!(ifelse(nu < 0, n2_, n3_), nu)
+
+    end
+
+    n2_, n3_
+
+end
+
+function number_significance(n1_, n2_)
+
+    i1_ = findall(<(0), n1_)
+
+    i2_ = findall(>=(0), n1_)
+
+    n3_, n4_ = number_sign(n2_)
+
+    n5_, n6_ = number_significance(<=, n1_[i1_], n3_)
+
+    n7_, n8_ = number_significance(>=, n1_[i2_], n4_)
+
+    vcat(i1_, i2_), vcat(n5_, n7_), vcat(n6_, n8_)
+
+end
+
+########################################
+
+function text_2(nu)
+
+    @sprintf("%.2g", nu)
+
+end
+
+function text_4(nu)
+
+    @sprintf("%.4g", nu)
+
+end
+
+function text_limit(s1, um)
+
+    if length(s1) <= um
+
+        return s1
+
+    end
+
+    s2 = s1[1:um]
+
+    "$s2..."
+
+end
+
+function make_date(st)
+
+    Date(st, @dateformat_str("yyyy mm dd"))
+
+end
+
+########################################
+
+function is_path(pa, u1)
+
+    u2 = 0
+
+    while u2 < u1
+
+        if ispath(pa)
+
+            return true
+
+        end
+
+        sleep(1)
+
+        u2 += 1
+
+        @info "Waited $u2 / $u1 for $pa"
+
+    end
+
+    false
+
+end
+
+function read_path(pa)
+
+    try
+
+        run(`open --background $pa`)
+
+    catch
+
+        @warn pa
+
+    end
 
 end
 
@@ -347,21 +313,9 @@ function pair_merge(d1::AbstractDict, d2::AbstractDict)
 
 end
 
-########################################
-
 function read_pair(pa)
 
-    (
-        if endswith(pa, "toml")
-
-            parsefile2
-
-        else
-
-            parsefile
-
-        end
-    )(pa)
+    ifelse(endswith(pa, "toml"), parsefile2, parsefile)(pa)
 
 end
 
@@ -377,11 +331,11 @@ end
 
 ########################################
 
-function make_part(A)
+function make_part(D)
 
-    st_ = names(A)
+    st_ = names(D)
 
-    st_[1], A[!, 1], st_[2:end], Matrix(A[!, 2:end])
+    st_[1], D[!, 1], st_[2:end], Matrix(D[!, 2:end])
 
 end
 
@@ -415,9 +369,9 @@ function read_sheet(pa, st; ke_...)
 
 end
 
-function write_table(pa, A)
+function write_table(pa, D)
 
-    write2(pa, A; delim = '\t')
+    write2(pa, D; delim = '\t')
 
 end
 
@@ -429,16 +383,6 @@ const LI = "#ebf6f7"
 
 const HU = "#fbb92d"
 
-const TU = "#20d9ba"
-
-const IN = "#4e40d8"
-
-const VI = "#9017e6"
-
-const SC = "#a40522"
-
-const PE = "#f47983"
-
 const RE = "#ff1993"
 
 const GR = "#92ff93"
@@ -449,13 +393,21 @@ const SP = "#00936e"
 
 const FA = "#ffd96a"
 
+const TU = "#20d9ba"
+
+const VI = "#9017e6"
+
+const IN = "#4e40d8"
+
 const OR = "#fc7f31"
 
-########################################
+const SC = "#a40522"
 
-function text_color()
+const PE = "#f47983"
 
-    st = randstring(
+function text_hex()
+
+    he = randstring(
         (
             '0',
             '1',
@@ -477,29 +429,29 @@ function text_color()
         6,
     )
 
-    "#$st"
+    "#$he"
 
 end
 
-function text_color(co)
+function text_hex(co)
 
-    st = hex(co, :rrggbbaa)
+    he = hex(co, :rrggbbaa)
 
-    "#$st"
+    "#$he"
 
 end
 
-function text_color(st, pr)
+function text_hex(he, pr)
 
-    text_color(coloralpha(parse(RGB, st), pr))
+    text_hex(coloralpha(parse(RGB, he), pr))
 
 end
 
 ########################################
 
-const C1_ = "#0000ff", "#ffffff", "#ff0000"
+const H1_ = "#0000ff", "#fcfcfc", "#ff0000"
 
-const C2_ = "#8a3ffc",
+const H2_ = "#8a3ffc",
 "#33b1ff",
 "#007d79",
 "#ff7eb6",
@@ -514,27 +466,25 @@ const C2_ = "#8a3ffc",
 "#ba4e00",
 "#d4bbff"
 
-########################################
+function make_colors1(he_)
 
-function make_colorscheme(st_)
-
-    ColorScheme([parse(RGB, st) for st in st_])
+    ColorScheme([parse(RGB, he) for he in he_])
 
 end
 
-function make_colorscale(st_)
+function make_colors2(he_)
 
-    um = length(st_)
+    um = length(he_)
 
     if isone(um)
 
-        st = st_[1]
+        he = he_[]
 
-        (0, st), (1, st)
+        (0, he), (1, he)
 
     else
 
-        Tuple(zip(range(0, 1, um), st_))
+        Tuple(zip(range(0, 1, um), he_))
 
     end
 
@@ -542,7 +492,7 @@ end
 
 ########################################
 
-function write_html(p1, pa_, s1, co = "#000000")
+function write_html(p1, pa_, s1, he = DA)
 
     p2 = if isempty(p1)
 
@@ -556,28 +506,35 @@ function write_html(p1, pa_, s1, co = "#000000")
 
     end
 
-    s3 = join(("<script src=\"$pa\"></script>" for pa in pa_), '\n')
+    s3 = join(("<script src=\"$p3\"></script>" for p3 in pa_), '\n')
 
     write(
         p2,
-        # TODO: Trim
         """
-        <!doctype html>
-        <html>
-          <head>
-            <meta charset="utf-8" />
-          </head>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+        </head>
         $s3
-          <body style="margin: 0; background: $co">
-            <div id="write_html" style="min-height: 100vh"></div>
-          </body>
-          <script>
+        <body style="margin:0; background:$he; min-height:100vh; display:flex; justify-content:center; align-items:center">
+          <div id="write_html" style="height:88vh; width:88vw"></div>
+        </body>
+        <script>
         $s1
-          </script>
+        </script>
         </html>""",
     )
 
     read_path(p2)
+
+end
+
+function write_gif(p1, pa_, um)
+
+    save(p1, stack(load(p2) for p2 in pa_); fps = um)
+
+    read_path(p1)
 
 end
 
@@ -661,7 +618,7 @@ function pair_heat(s1_, s2_, N)
         "y" => s1_,
         "x" => s2_,
         "z" => collect(eachrow(N)),
-        "colorscale" => make_colorscale(C1_),
+        "colorscale" => make_colors2(H1_),
     )
 
 end
@@ -680,16 +637,6 @@ function write_heat(pa, s1_, s2_, N, di = Dict{String, Any}())
             di,
         ),
     )
-
-end
-
-########################################
-
-function write_gif(p1, pa_, um)
-
-    save(p1, stack(load(p2) for p2 in pa_); fps = um)
-
-    read_path(p1)
 
 end
 
