@@ -18,6 +18,8 @@ using DataFrames: DataFrame, insertcols!
 
 using Dates: @dateformat_str, Date
 
+using Distributions: Normal, quantile
+
 using ImageMagick: load, save
 
 using JSON: json, parsefile, print
@@ -30,7 +32,7 @@ using Printf: @sprintf
 
 using Random: randstring
 
-using StatsBase: mean, mean_and_std, tiedrank
+using StatsBase: mean, mean_and_std, std, tiedrank
 
 using TOML: parsefile as parsefile2
 
@@ -149,6 +151,12 @@ function index_extreme(an_, u1)
         vcat(1:u1, (u2 - u1 + 1):u2)
 
     end]
+
+end
+
+function number_confidence(nu_, pr = 0.95)
+
+    quantile(Normal(), 0.5 + pr * 0.5) * std(nu_) / sqrt(length(nu_))
 
 end
 
