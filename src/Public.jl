@@ -162,9 +162,17 @@ end
 
 function number_significance(fu, n1_, n2_)
 
-    um = length(n2_)
+    u1 = length(n1_)
 
-    pr_ = map(nu -> max(1, count(fu(nu), n2_)) / um, n1_)
+    u2 = length(n2_)
+
+    if iszero(u1) || iszero(u2)
+
+        return fill(NaN, u1), fill(NaN, u1)
+
+    end
+
+    pr_ = map(nu -> max(1, count(fu(nu), n2_)) / u2, n1_)
 
     pr_, adjust(pr_, BenjaminiHochberg())
 
