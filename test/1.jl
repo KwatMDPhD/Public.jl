@@ -6,8 +6,9 @@ const N1_ = [0, 1, 2, 3, 5, 9, 5, 3, 2, 1, 0]
 
 const N2_ = [0, 1, 2, 3, 5, 18, 7, 5, 4, 3, 2]
 
-const N3_, N4_ =
-    (map((n1, n2) -> (n1 + n2) * pr, N1_, N2_) for pr in (0.1, 0.5))
+const N3_ = map((n1, n2) -> (n1 + n2) * 0.1, N1_, N2_)
+
+const N4_ = map((n1, n2) -> (n1 + n2) * 0.5, N1_, N2_)
 
 function write(s1, n1_)
 
@@ -15,7 +16,7 @@ function write(s1, n1_)
         "",
         (
             Dict("name" => s2, "y" => n2_, "mode" => "lines") for (s2, n2_) in
-            (('A', N1_), ("Ab", N3_), ("AB", N4_), ('B', N2_), (s1, n1_))
+            (("A", N1_), ("Ab", N3_), ("AB", N4_), ("B", N2_), (s1, n1_))
         ),
     )
 
