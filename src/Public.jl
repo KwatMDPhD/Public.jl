@@ -130,9 +130,29 @@ function number_signal(n1_, n2_)
 
 end
 
-function make_function(fu, bo_, an_)
+########################################
 
-    fu(an_[map(!, bo_)], an_[bo_])
+function index_12(i1_)
+
+    i2_ = Int[]
+
+    i3_ = Int[]
+
+    for nd in eachindex(i1_)
+
+        push!(ifelse(isone(i1_[nd]), i2_, i3_), nd)
+
+    end
+
+    i2_ ,i3_
+
+end
+
+function make_function(fu, i1_, an_)
+
+    i2_, i3_ = index_12(i1_)
+
+    fu(an_[i2_], an_[i3_])
 
 end
 
