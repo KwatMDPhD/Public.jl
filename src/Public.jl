@@ -568,7 +568,11 @@ end
 
 function write_gif(p1, pa_, um)
 
-    save(p1, stack(load(p2) for p2 in pa_); fps = um)
+    save(
+        p1,
+        reduce((A1, A2) -> cat(A1, A2; dims = 3), load(p2) for p2 in pa_);
+        fps = um,
+    )
 
     read_path(p1)
 
