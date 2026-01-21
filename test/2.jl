@@ -4,8 +4,6 @@ using Test: @test
 
 using Public
 
-########################################
-
 for (um, re) in (
     (10, 0.6597957136428491),
     (100, 0.18754776361269151),
@@ -18,8 +16,6 @@ for (um, re) in (
     @test Public.number_confidence(randn(um)) === re
 
 end
-
-########################################
 
 seed!(20250421)
 
