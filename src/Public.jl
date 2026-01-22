@@ -246,13 +246,13 @@ end
 
 function text_2(nu)
 
-    @sprintf("%.2g", nu)
+    @sprintf "%.2g" nu
 
 end
 
 function text_4(nu)
 
-    @sprintf("%.4g", nu)
+    @sprintf "%.4g" nu
 
 end
 
@@ -272,7 +272,7 @@ end
 
 function make_date(st)
 
-    Date(st, @dateformat_str("yyyy mm dd"))
+    Date(st, dateformat"yyyy mm dd")
 
 end
 
@@ -294,7 +294,7 @@ function is_path(pa, u1)
 
         u2 += 1
 
-        @info "Waited $u2 / $u1 for $pa"
+        @info "Waited for $pa ($u2 / $u1)"
 
     end
 
@@ -310,7 +310,7 @@ function read_path(pa)
 
     catch
 
-        @warn pa
+        @warn "Failed to open $pa"
 
     end
 
