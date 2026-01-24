@@ -655,15 +655,9 @@ end
 
 ########################################
 
-function pair_heat(s1_, s2_, N)
+function pair_heat(di, s1_, s2_, nu__)
 
-    Dict(
-        "type" => "heatmap",
-        "y" => s1_,
-        "x" => s2_,
-        "z" => collect(eachrow(N)),
-        "colorscale" => make_color2(H1_),
-    )
+    merge(di, Dict("type" => "heatmap", "y" => s1_, "x" => s2_, "z" => nu__))
 
 end
 
@@ -671,7 +665,14 @@ function write_heat(pa, s1_, s2_, N, di = Dict{String, Any}())
 
     write_plotly(
         pa,
-        (pair_heat(s1_, s2_, N),),
+        (
+            pair_heat(
+                Dict("colorscale" => make_color2(H1_)),
+                s1_,
+                s2_,
+                eachrow(N),
+            ),
+        ),
         pair_merge(
             Dict(
                 "yaxis" =>
