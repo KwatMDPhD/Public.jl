@@ -584,18 +584,31 @@ end
 
 ########################################
 
-function write_plotly(
-    pa,
-    di_,
-    d1 = Dict{String, Any}(),
-    d2 = Dict{String, Any}(),
-)
+function pair_font(nu)
+
+    "font" => Dict("size" => nu)
+
+end
+
+function pair_title(st)
+
+    "title" => Dict("text" => st)
+
+end
+
+function pair_title(s1, s2)
+
+    "title" => Dict("text" => s1, "subtitle" => Dict("text" => s2))
+
+end
+
+function write_plotly(pa, di_, d1 = Dict(), d2 = Dict())
 
     s1 = json(di_; allownan = true)
 
     d3 = Dict(
         "automargin" => true,
-        "title" => Dict("font" => Dict("size" => 24)),
+        "title" => Dict(pair_font(24)),
         "zeroline" => false,
         "showgrid" => false,
     )
@@ -618,10 +631,10 @@ function write_plotly(
                         ),
                     ),
                     "layout" => Dict(
-                        "title" => Dict("font" => Dict("size" => 32)),
+                        "title" => Dict(pair_font(32)),
                         "yaxis" => d3,
                         "xaxis" => d3,
-                        "legend" => Dict("font" => Dict("size" => 16)),
+                        "legend" => Dict(pair_font(16)),
                     ),
                 ),
             ),
@@ -639,20 +652,6 @@ function write_plotly(
 
 end
 
-function pair_title(s1, s2 = "")
-
-    di = Dict{String, Any}("text" => s1)
-
-    if !isempty(s2)
-
-        di["subtitle"] = Dict("text" => s2)
-
-    end
-
-    "title" => di
-
-end
-
 ########################################
 
 function pair_heat(di, s1_, s2_, nu__)
@@ -661,7 +660,7 @@ function pair_heat(di, s1_, s2_, nu__)
 
 end
 
-function write_heat(pa, s1_, s2_, N, di = Dict{String, Any}())
+function write_heat(pa, s1_, s2_, N, di = Dict())
 
     write_plotly(
         pa,

@@ -2,10 +2,13 @@ using Public
 
 # ------------------------------------ #
 
-for nd in 1:2
+for st in sort!(
+    filter!(!=("runtests.jl"), readdir());
+    by = st -> parse(Int, split(st, '.'; limit = 2)[1]),
+)
 
-    @info "🎬 $nd"
+    @info "🎬 $st"
 
-    run(`julia --project $nd.jl`)
+    run(`julia --project $st`)
 
 end
