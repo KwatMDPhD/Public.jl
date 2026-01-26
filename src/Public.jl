@@ -318,6 +318,32 @@ end
 
 ########################################
 
+function pair_string!(di, s1, an)
+
+    nd = 1
+
+    while haskey(di, s1)
+
+        s2 = if isone(nd)
+
+            s1
+
+        else
+
+            rsplit(s1, '.'; limit = 2)[1]
+
+        end
+
+        nd += 1
+
+        s1 = "$s2.$nd"
+
+    end
+
+    di[s1] = an
+
+end
+
 function pair_merge(_, an)
 
     an
